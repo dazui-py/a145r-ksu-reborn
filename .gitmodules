@@ -1,0 +1,7 @@
+[submodule "kernel-6.6/KernelSU"]
+	path = kernel-6.6/KernelSU
+	url = https://github.com/tiann/KernelSU.git
+[submodule "susfs4ksu"]
+	path = susfs4ksu
+	url = https://gitlab.com/simonpunk/susfs4ksu.git
+	branch = gki-android15-6.6
