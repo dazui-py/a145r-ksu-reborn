@@ -2878,7 +2878,7 @@ static void tpd2_down(s32 x, s32 y, s32 size, s32 id)
 
 #ifdef CONFIG_MTK_BOOT
 	if (tpd2_dts_data.use_tpd2_button) {
-		if (FACTORY_BOOT == get_boot_mode() || RECOVERY_BOOT == get_boot_mode())
+		if (FACTORY_BOOT == get_boot_mode())
 			tpd2_button(x, y, 1);
 	}
 #endif
@@ -2899,7 +2899,7 @@ static void tpd2_up(s32 x, s32 y, s32 id)
 
 #ifdef CONFIG_MTK_BOOT
 	if (tpd2_dts_data.use_tpd2_button) {
-		if (FACTORY_BOOT == get_boot_mode() || RECOVERY_BOOT == get_boot_mode())
+		if (FACTORY_BOOT == get_boot_mode())
 			tpd2_button(x, y, 0);
 	}
 #endif

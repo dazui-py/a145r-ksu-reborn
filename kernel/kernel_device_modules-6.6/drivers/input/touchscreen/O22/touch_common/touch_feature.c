@@ -468,7 +468,7 @@ int tp_detect_panel(const char *tp_ic)
     bool is_found =  tp_choose_panel(tp_ic);
 
     enum boot_mode_t boot_mode = tp_get_boot_mode();
-    if ((boot_mode != NORMAL_BOOT) && (boot_mode != ALARM_BOOT)) {
+    if ((boot_mode != RECOVERY_BOOT) && (boot_mode != ALARM_BOOT)) {
         TP_ERROR("tp init fail because boot_mode = %d\n", boot_mode);
         return -EINVAL;
     }
@@ -487,7 +487,7 @@ int tp_detect_panel(const char *tp_ic)
     const char *panel_name = tp_choose_panel();
 
     enum boot_mode_t boot_mode = tp_get_boot_mode();
-    if ((boot_mode != NORMAL_BOOT) && (boot_mode != ALARM_BOOT)) {
+    if ((boot_mode != RECOVERY_BOOT) && (boot_mode != ALARM_BOOT)) {
         TP_ERROR("tp init fail because boot_mode = %d\n", boot_mode);
         return -EINVAL;
     }
