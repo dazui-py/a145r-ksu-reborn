@@ -62,7 +62,7 @@ KDIR := $(KDIR)
 
 GIT_BIN := /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin git
 
-KSU_SRC := /home/runner/work/Builder/Builder/rootdir/kernel_root/kernel-6.6/KernelSU
+KSU_SRC := /home/runner/work/Builder/Builder/rootdir/kernel_root/kernel-6.6/KernelSU/kernel
 
 LOCAL_GIT_EXISTS := $(shell test -e $(KSU_SRC)/../.git && echo 1 || echo 0)
 
