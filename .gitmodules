@@ -6,3 +6,9 @@
 [submodule "Baseband-guard"]
 	path = kernel-6.6/Baseband-guard
 	url = https://github.com/vc-teahouse/Baseband-guard
+[submodule "kernel-6.6/Baseband-guard"]
+	path = kernel-6.6/Baseband-guard
+	url = https://github.com/vc-teahouse/Baseband-guard.git
+[submodule "kernel-6.6/KernelSU"]
+	path = kernel-6.6/KernelSU
+	url = https://github.com/ReSukiSU/ReSukiSU
