@@ -19,6 +19,8 @@
 #include "hook/syscall_event_bridge.h"
 #include "feature/adb_root.h"
 
+#include "compat/kernel_compat.h"
+
 static int ksu_handle_init_mark_tracker(const char __user **filename_user)
 {
     char path[64];
@@ -53,7 +55,8 @@ long __nocfi ksu_hook_newfstatat(int orig_nr, const struct pt_regs *regs)
     const char __user **filename_user;
     int *flags;
 
-    if (!ksu_su_compat_enabled)
+    // GKI2 always have static_key
+    if (!static_branch_unlikely(&ksu_su_compat_enabled))
         return ksu_syscall_table[orig_nr](regs);
 
     dfd = (int *)&PT_REGS_PARM1(regs);
@@ -70,7 +73,8 @@ long __nocfi ksu_hook_faccessat(int orig_nr, const struct pt_regs *regs)
     const char __user **filename_user;
     int *mode;
 
-    if (!ksu_su_compat_enabled)
+    // GKI2 always have static_key
+    if (!static_branch_unlikely(&ksu_su_compat_enabled))
         return ksu_syscall_table[orig_nr](regs);
 
     dfd = (int *)&PT_REGS_PARM1(regs);
@@ -81,12 +85,10 @@ long __nocfi ksu_hook_faccessat(int orig_nr, const struct pt_regs *regs)
     return ksu_syscall_table[orig_nr](regs);
 }
 
-DEFINE_STATIC_KEY_TRUE(ksud_execve_key);
-
-void ksu_stop_ksud_execve_hook()
-{
-    static_branch_disable(&ksud_execve_key);
-}
+// there are for tracepoint syscall redirect hook
+// It are only support for GKI2 kernel
+// I think we no need ifdef 4.3- kernel compatible in there?
+extern struct static_key_true ksud_execve_key;
 
 long __nocfi ksu_hook_execve(int orig_nr, const struct pt_regs *regs)
 {
@@ -100,16 +102,16 @@ long __nocfi ksu_hook_execve(int orig_nr, const struct pt_regs *regs)
         ksu_execve_hook_ksud(regs);
 
     if (current_euid().val == 0)
-        pending_root_execve = ksu_sulog_capture_root_execve(*filename_user, argv_user, GFP_KERNEL);
+        pending_root_execve = ksu_sulog_capture_root_execve_tracepoint(*filename_user, argv_user, GFP_KERNEL);
 
     if (current->pid != 1 && current_is_init) {
         ksu_handle_init_mark_tracker(filename_user);
-        ret = ksu_adb_root_handle_execve((struct pt_regs *)regs);
+        ret = ksu_adb_root_handle_execve_tracepoint((struct pt_regs *)regs);
         if (ret) {
             pr_err("adb root failed: %ld\n", ret);
         }
-    } else if (ksu_su_compat_enabled) {
-        ret = ksu_handle_execve_sucompat(filename_user, orig_nr, regs);
+    } else if (static_branch_likely(&ksu_su_compat_enabled)) {
+        ret = ksu_handle_execve_sucompat_tp_internal(filename_user, orig_nr, regs);
         ksu_sulog_emit_pending(pending_root_execve, ret, GFP_KERNEL);
         return ret;
     }
@@ -121,12 +123,12 @@ long __nocfi ksu_hook_execve(int orig_nr, const struct pt_regs *regs)
 
 long __nocfi ksu_hook_setresuid(int orig_nr, const struct pt_regs *regs)
 {
-    uid_t old_uid = current_uid().val;
+    uid_t old_uid = ksu_get_uid_t(current_uid());
     long ret = ksu_syscall_table[orig_nr](regs);
 
     if (ret < 0)
         return ret;
 
-    ksu_handle_setresuid(old_uid, current_uid().val);
+    ksu_handle_setuid(ksu_get_uid_t(current_uid()), old_uid);
     return ret;
 }

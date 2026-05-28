@@ -30,7 +30,7 @@ static int ksu_handle_inode_event(struct fsnotify_mark *mark, u32 mask, struct i
         return 0;
     if (file_name->len == 13 && !memcmp(file_name->name, "packages.list", 13)) {
         pr_info("packages.list detected: %d\n", mask);
-        track_throne(false);
+        track_throne(0);
     }
     return 0;
 }
@@ -112,7 +112,7 @@ int ksu_observer_init(void)
         return PTR_ERR(g);
 
     ret = watch_one_dir(&g_watch);
-    pr_info("observer init done\n");
+    pr_info("%s done.\n", __func__);
     return 0;
 }
 
@@ -120,5 +120,5 @@ void __exit ksu_observer_exit(void)
 {
     unwatch_one_dir(&g_watch);
     fsnotify_put_group(g);
-    pr_info("observer exit done\n");
+    pr_info("%s: done.\n", __func__);
 }

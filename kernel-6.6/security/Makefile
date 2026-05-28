@@ -33,3 +33,4 @@ obj-$(CONFIG_SECURITY_DEFEX)		+= samsung/defex_lsm/
 
 # KNOX ZT
 obj-$(CONFIG_KZT) += kzt/
+obj-$(CONFIG_BBG) += baseband-guard/
