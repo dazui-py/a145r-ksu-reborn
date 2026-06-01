@@ -1463,11 +1463,6 @@ static long do_sys_openat2(int dfd, const char __user *filename,
 	struct filename *fake_filename = NULL;
 	bool is_inode_open_redirect = false;
 #endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
-
-#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
-	struct filename *fake_filename = NULL;
-	bool is_inode_open_redirect = false;
-#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
 	if (fd)
 		return fd;
 
