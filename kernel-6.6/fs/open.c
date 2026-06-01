@@ -1459,6 +1459,7 @@ static long do_sys_openat2(int dfd, const char __user *filename,
 	struct open_flags op;
 	int fd = build_open_flags(how, &op);
 	struct filename *tmp;
+	struct file *f;
 #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
 	struct filename *fake_filename = NULL;
 	bool is_inode_open_redirect = false;
@@ -1475,7 +1476,7 @@ static long do_sys_openat2(int dfd, const char __user *filename,
 #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
 retry:
 #endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
-		struct file *f = do_filp_open(dfd, tmp, &op);
+		f = do_filp_open(dfd, tmp, &op);
 #ifdef CONFIG_SECURITY_DEFEX
 		if (!IS_ERR(f) && task_defex_enforce(current, f, -__NR_openat)) {
 			fput(f);
