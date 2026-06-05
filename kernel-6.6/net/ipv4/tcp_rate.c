@@ -39,11 +39,9 @@ void tcp_set_tx_in_flight(struct sock *sk, struct sk_buff *skb)
 	struct tcp_sock *tp = tcp_sk(sk);
 	u32 in_flight;
 
-	/* Check, sanitize, and record packets in flight after skb was sent. */
 	in_flight = tcp_packets_in_flight(tp) + tcp_skb_pcount(skb);
 	if (WARN_ONCE(in_flight > TCPCB_IN_FLIGHT_MAX,
-		      "insane in_flight %u cc %s mss %u "
-		      "cwnd %u pif %u %u %u %u\n",
+		      "insane in_flight %u cc %s mss %u cwnd %u pif %u %u %u %u\n",
 		      in_flight, inet_csk(sk)->icsk_ca_ops->name,
 		      tp->mss_cache, tp->snd_cwnd,
 		      tp->packets_out, tp->retrans_out,
@@ -123,9 +121,8 @@ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
 		/* Record send time of most recently ACKed packet: */
 		tp->first_tx_mstamp  = tx_tstamp;
 		/* Find the duration of the "send phase" of this window: */
-		rs->interval_us      = tcp_stamp32_us_delta(
-						tp->first_tx_mstamp,
-						scb->tx.first_tx_mstamp);
+		rs->interval_us = tcp_stamp32_us_delta(tp->first_tx_mstamp,
+						       scb->tx.first_tx_mstamp);
 
 	}
 	/* Mark off the skb delivered once it's sacked to avoid being
@@ -180,7 +177,7 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
 	 */
 	snd_us = rs->interval_us;				/* send phase */
 	ack_us = tcp_stamp32_us_delta(tp->tcp_mstamp,
-				    rs->prior_mstamp); /* ack phase */
+				      rs->prior_mstamp); /* ack phase */
 	rs->interval_us = max(snd_us, ack_us);
 
 	/* Record both segment send and ack receive intervals */
